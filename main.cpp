@@ -9,52 +9,47 @@ int Max(int a, int b){
 int cover(int **arr, int length, int *iCover, int *jCover){
   int sum = 0;
   int arrcopy[length][length];
+  int assignCol[length];
+  int assignRow[length];
   for(int i=0;i<length;i++){
     for(int j=0;j<length;j++){
       arrcopy[i][j] = arr[i][j];
     }
   }
   for(int i=0;i<length;i++){
-    iCover[i] = 0;
+    assignRow[i] = -1;
+    assignCol[i] = -1;
+    iCover[i] = 1;
     jCover[i] = 0;
   }
-  while(true){
-    //find min
-    int iSum[length] ={0};
-    int jSum[length] ={0};
-    for(int i=0;i<length;i++){
+  for(int i = 0;i<length;i++){
+    for(int j=0;j<length;j++){
+      if(arrcopy[i][j]==0 && assignCol[j]==-1){
+	assignCol[j]=i;
+	assignRow[i]=j;
+	arrcopy[i][j]=-1;
+      }
+    }
+  }
+  for(int i=0;i<length;i++){
+    if(assignRow[i]==-1){
+      iCover[i]=0;
       for(int j=0;j<length;j++){
-	if(arrcopy[i][j] == 0){
-	  iSum[i] += 1;
-	  jSum[j] += 1;
+	if(arrcopy[i][j]==0){
+	  jCover[j]=1;
+	  for(int a=0;a<length;a++){
+	    if(arrcopy[a][j]==-1){
+	      iCover[a]=0;
+	      break;
+	    }
+	  }
 	}
       }
     }
-    int iMaxIndex = 0;
-    int jMaxIndex = 0;
-    for(int i=0;i<length;i++){
-      if(iSum[iMaxIndex] < iSum[i]){
-	iMaxIndex = i;
-      }
-      if(jSum[jMaxIndex] < jSum[i]){
-	jMaxIndex = i;
-      }
-    }
-    if(jSum[jMaxIndex] == 0 && iSum[iMaxIndex] == 0){
-      break;
-    }
-    if(iSum[iMaxIndex]>jSum[jMaxIndex]){
-      for(int j=0;j<length;j++){
-	arrcopy[iMaxIndex][j] += 1;
-      }
-      iCover[iMaxIndex]=1;
-    }else{
-      for(int i=0;i<length;i++){
-	arrcopy[i][jMaxIndex] += 1;
-      }
-      jCover[jMaxIndex]=1;
-    }
-    sum++;
+  }
+  for(int i=0;i<length;i++){
+    sum+=iCover[i] + jCover[i];
+    //    cout << iCover[i] << " " << jCover[i] << endl;
   }
   return sum;
 }
@@ -142,6 +137,6 @@ int main(){
       cout << arr[i][j] << " ";
     }
     cout << endl;
-  }  
+  }
   return 0;
 }
